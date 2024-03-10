@@ -1,22 +1,28 @@
 import numpy as np
+'''Obtendo o epsilon de maquina'''
+eps = 1.0
+
+while eps + 1 > 1:
+    eps /= 2
+eps *= 2
 
 
-def triangularInfOrSup(matriz: list[list[int]], type: str = "superior") -> bool:
+def triangularInfOrSup(matriz: list[list[int]], tipo: str = "superior") -> bool:
     n = len(matriz)
-    if type == "superior":
+    if tipo == "superior":
         for i in range(n):
-            if matriz[i][i] == 0:
+            if matriz[i][i] < eps:
                 return False
             for j in range(0, i):
-                if matriz[i][j] != 0:
+                if matriz[i][j] > eps:
                     return False
         return True
-    elif type == "inferior":
+    elif tipo == "inferior":
         for i in range(n):
-            if matriz[i][i] == 0:
+            if matriz[i][i] < eps:
                 return False
             for j in range(i + 1, n):
-                if matriz[i][j] != 0:
+                if matriz[i][j] > eps:
                     return False
         return True
 
@@ -26,10 +32,11 @@ A = [
     [5, 2, 1],
     [1, 3, 4]
 ]
+
 b = [14, 12, 19]
 
 
-def solverLinearSistem(matriz_A: list[list[int]], vetor_b: list[int], algoritmo: str = "eliminacao gaussiana") -> list:
+def solverLinearSystem(matriz_A: list[list[int]], vetor_b: list[int], algoritmo: str = "eliminacao gaussiana") -> list:
     """
     :param matriz_A:
     :param vetor_b:
@@ -37,7 +44,7 @@ def solverLinearSistem(matriz_A: list[list[int]], vetor_b: list[int], algoritmo:
     :return:
     """
     if algoritmo == "substituicao direta":
-        if triangularInfOrSup(matriz_A, type="inferior"):
+        if triangularInfOrSup(matriz_A, tipo="inferior"):
             n = len(vetor_b)
             x = [0] * n
             for i in range(n):
@@ -60,14 +67,14 @@ def solverLinearSistem(matriz_A: list[list[int]], vetor_b: list[int], algoritmo:
         n = len(vetor_b)
         for i in range(n):
             max_index = i
-            for j in range(i+i,n):
+            for j in range(i + i, n):
                 if abs(matriz_A[j][i]) > abs(matriz_A[max_index][i]):
                     max_index = j
             matriz_A[i], matriz_A[max_index] = matriz_A[max_index], matriz_A[i]
             vetor_b[i], vetor_b[max_index] = vetor_b[max_index], vetor_b[i]
 
             # Eliminacao gaussiana
-            for j in range(i+1, n):
+            for j in range(i + 1, n):
                 fator = (matriz_A[j][i]) / matriz_A[i][i]
                 for k in range(i, n):
                     matriz_A[j][k] -= fator * matriz_A[i][k]
@@ -80,4 +87,4 @@ def solverLinearSistem(matriz_A: list[list[int]], vetor_b: list[int], algoritmo:
         return x
 
 
-print(solverLinearSistem(A, b))
+print(solverLinearSystem(A, b))
