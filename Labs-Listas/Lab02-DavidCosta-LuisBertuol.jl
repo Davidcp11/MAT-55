@@ -208,6 +208,7 @@ function decomposicaoLUComPivoteamento(A)
 
         # permutar linhas
         U[i, :], U[linhaMax, :] = U[linhaMax, :], U[i, :]
+        L[i, 1:i-1], L[linhaMax, 1:i-1] = L[linhaMax, 1:i-1], L[i, 1:i-1]
 
         for j in i+1:n
             m = U[j, i]/U[i, i]
