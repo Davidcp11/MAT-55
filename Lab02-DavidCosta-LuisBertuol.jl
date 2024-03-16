@@ -1,3 +1,5 @@
+using LinearAlgebra
+
 # =====================================================================
 # *********************************************************************
 #                    MAT-55 2024 - Lista 01 - Exercício 6 
@@ -124,6 +126,93 @@ function elim_gauss(A::Array{Float64,2}, b::Array{Float64,1})
 end
 
 # =====================================================================
+#  Algoritmo de Fatoração LU - sem pivoteamento - com pivoteamento parcial
+# =====================================================================
+# ---------------------------------------------------------------------
+# Dados de entrada:
+# A     matriz nxn triangular superior, não singular
+# b     vetor n
+# ---------------------------------------------------------------------
+# Saída:
+# b     se A é não singular, b é a solução do sistema linear Ax = b
+function matrizesLUSemPivoteamento(A::Array{Float64,2})
+    n = size(A, 1)
+    L = Matrix{Float64}(I, n, n)
+    U = copy(A)
+
+    for k in 1:n-1
+        for j in k+1:n
+            m = U[j, k] / U[k, k]
+            L[j, k] = m
+            U[j, k:end] -= m * U[k, k:end]
+        end
+    end
+
+    return L, U
+end
+
+function matrizesLUComPivoteamentoParcial(A::Array{Float64,2})
+    tol = 1e-12
+    n = size(A, 1)
+    L = zeros(n, n)
+    U = copy(A)
+
+    for i in 1:n
+        L[i, i] = 1
+    end
+
+
+    for i in 1:n-1
+        # verificar qual linha tem o elemento U[i, i] de maior modulo
+        max = abs(U[i,i])
+        linhaMax = i
+        for j in i:n
+            if abs(U[j, i]) > max
+                max = abs(U[j, i])
+                linhaMax = j
+            end
+        end
+        if max < tol
+            error("Matriz singular")
+        end
+
+        # permutar linhas
+        U[i, :], U[linhaMax, :] = U[linhaMax, :], U[i, :]
+        L[i, 1:i-1], L[linhaMax, 1:i-1] = L[linhaMax, 1:i-1], L[i, 1:i-1]
+
+        for j in i+1:n
+            m = U[j, i]/U[i, i]
+            L[j, i] = m
+            for k in i:n
+                U[j, k] = U[j, k] - m*U[i, k]
+            end
+        end
+    end
+
+    return L, U
+    
+end
+
+function solverFatoracaoLUSemPivoteamento(A::Array{Float64,2}, b::Array{Float64,1})
+    L, U = matrizesLUSemPivoteamento(A)
+    d = sub_direta(L, b)
+    x = sub_inversa(U, d)
+
+    return x
+
+end
+
+function solverFatoracaoLUComPivoteamentoParcial(A::Array{Float64,2}, b::Array{Float64,1})
+    L, U = matrizesLUComPivoteamentoParcial(A)
+    d = sub_direta(L, b)
+    x = sub_inversa(U, d)
+
+    return x
+
+end
+
+
+# =====================================================================
 # =====================================================================
 #			PROGRAMA PRINCIPAL
 # =====================================================================
@@ -156,12 +245,14 @@ end
 # Dados do sistema
 #Digite aqui os dados do sistema linear
 
-b = [3.0, 4]
+b = [3.0, 2]
 
 A = [
-    1.0 0;
-    2.0 -1.0 
+    1.0 2;
+    2.0 0 
 ]
+
+println(solverFatoracaoLUComPivoteamentoParcial(A, b))  
 
 
 
