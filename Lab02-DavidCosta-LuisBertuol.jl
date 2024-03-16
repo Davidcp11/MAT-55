@@ -156,9 +156,11 @@ function matrizesLUComPivoteamentoParcial(A::Array{Float64,2})
     n = size(A, 1)
     L = zeros(n, n)
     U = copy(A)
+    P = zeros(n, n)
 
     for i in 1:n
         L[i, i] = 1
+        P[i, i] = 1
     end
 
 
@@ -177,19 +179,20 @@ function matrizesLUComPivoteamentoParcial(A::Array{Float64,2})
         end
 
         # permutar linhas
-        U[i, :], U[linhaMax, :] = U[linhaMax, :], U[i, :]
-        L[i, 1:i-1], L[linhaMax, 1:i-1] = L[linhaMax, 1:i-1], L[i, 1:i-1]
-
-        for j in i+1:n
-            m = U[j, i]/U[i, i]
-            L[j, i] = m
-            for k in i:n
-                U[j, k] = U[j, k] - m*U[i, k]
-            end
+        if linhaMax !=i
+            U[i, :], U[linhaMax, :] = U[linhaMax, :], U[i, :]
+            L[i, 1:i-1], L[linhaMax, 1:i-1] = L[linhaMax, 1:i-1], L[i, 1:i-1]
+            P[i, :], P[linhaMax, :] = P[linhaMax, :], P[i, :]
+        end
+        # Fazer a eliminação gaussiana
+        for j = i+1:n
+            factor = U[j, i] / U[i, i]
+            L[j, i] = factor
+            U[j, i:n] -= factor * U[i, i:n]
         end
     end
 
-    return L, U
+    return L, U, P
     
 end
 
@@ -203,7 +206,8 @@ function solverFatoracaoLUSemPivoteamento(A::Array{Float64,2}, b::Array{Float64,
 end
 
 function solverFatoracaoLUComPivoteamentoParcial(A::Array{Float64,2}, b::Array{Float64,1})
-    L, U = matrizesLUComPivoteamentoParcial(A)
+    L, U, P = matrizesLUComPivoteamentoParcial(A)
+    b = P*b
     d = sub_direta(L, b)
     x = sub_inversa(U, d)
 
@@ -223,12 +227,14 @@ end
 #utilizado, dentre as opçõe:
 # a: Algoritmo de Substituição Direta.
 # b: Algoritmo de Substituição Inversa. 
-# C: Eliminação Gaussiana.
+# c: Eliminação Gaussiana.
 function solverLinearSystem(A::Array{Float64,2}, b::Array{Float64,1})
     println("Escolha o método para resolver o sistema linear:")
     println("a: Algoritmo de Substituição Direta.")
     println("b: Algoritmo de Substituição Inversa.")
     println("c: Eliminação Gaussiana.")
+    println("d: Fatoração LU sem pivoteamento.")
+    println("e: Fatoração LU com pivoteamento parcial.")
     metodo = readline()
     metodo = metodo[1]
     
@@ -238,6 +244,10 @@ function solverLinearSystem(A::Array{Float64,2}, b::Array{Float64,1})
         return sub_inversa(A, b)
     elseif metodo == 'c'
         return elim_gauss(A, b)
+    elseif metodo == 'd'
+        return solverFatoracaoLUSemPivoteamento(A, b)
+    elseif metodo == 'e'
+        return solverFatoracaoLUComPivoteamentoParcial(A, b)
     else
         return "Método inválido"
     end
@@ -252,7 +262,7 @@ A = [
     2.0 0 
 ]
 
-println(solverFatoracaoLUComPivoteamentoParcial(A, b))  
+println(solverFatoracaoLUSemPivoteamento(A, b))  
 
 
 
