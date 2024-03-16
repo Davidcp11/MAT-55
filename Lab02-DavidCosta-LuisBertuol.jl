@@ -255,6 +255,7 @@ end
 # Dados do sistema
 #Digite aqui os dados do sistema linear
 
+
 b = [3.0, 2]
 
 A = [
