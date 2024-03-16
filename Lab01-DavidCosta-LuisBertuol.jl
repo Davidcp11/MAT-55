@@ -156,12 +156,17 @@ end
 # Dados do sistema
 #Digite aqui os dados do sistema linear
 
-b = [3.0, 4]
+# Para funcionar corretamente, coloque pelo menos um dos números na forma de float
+
+b = [6.0; 2; 7]
 
 A = [
-    1.0 0;
-    2.0 -1.0 
+    1.0 0 0;
+    2 -1 0;
+    4 3 1 
 ]
 
+
+print(solverLinearSystem(A, b))
 
 
