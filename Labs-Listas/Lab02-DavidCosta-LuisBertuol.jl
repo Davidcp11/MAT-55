@@ -197,18 +197,17 @@ function decomposicaoLUComPivoteamento(A)
 
     for i in 1:n-1
         # verificar qual linha tem o elemento U[i, i] de maior modulo
-        max = U[i,i]
+        max = abs(U[i,i])
         linhaMax = i
         for j in i:n
-            if U[j, i] > max
-                max = U[j, i]
+            if abs(U[j, i]) > max
+                max = abs(U[j, i])
                 linhaMax = j
             end
         end
 
         # permutar linhas
         U[i, :], U[linhaMax, :] = U[linhaMax, :], U[i, :]
-        L[i, 1:i-1], L[linhaMax, 1:i-1] = L[linhaMax, 1:i-1], L[i, 1:i-1]
 
         for j in i+1:n
             m = U[j, i]/U[i, i]
@@ -217,11 +216,13 @@ function decomposicaoLUComPivoteamento(A)
                 U[j, k] = U[j, k] - m*U[i, k]
             end
         end
+
+        println(U)
+        println()
     end
 
 
     println(L)
-    println(U)
     return L, U
 end
 
@@ -247,6 +248,34 @@ A = [
 ]
 
 
-decomposicaoLUComPivoteamento(A)
+L, U = decomposicaoLUComPivoteamento(A)
+
+function solve_lu(L, U, b)
+    n = size(L, 1)
+
+    # Resolver Ly = b usando substituição direta
+    y = zeros(n)
+    for i in 1:n
+        y[i] = b[i]
+        for j in 1:i-1
+            y[i] -= L[i, j] * y[j]
+        end
+    end
+
+    # Resolver Ux = y usando substituição inversa
+    x = zeros(n)
+    for i in n:-1:1
+        x[i] = y[i]
+        for j in i+1:n
+            x[i] -= U[i, j] * x[j]
+        end
+        x[i] /= U[i, i]
+    end
+
+    return x
+end
 
 
+
+
+println(solve_lu(L, U, b))
