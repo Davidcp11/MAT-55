@@ -252,18 +252,22 @@ function solverLinearSystem(A::Array{Float64,2}, b::Array{Float64,1})
         return "Método inválido"
     end
 end
+
+
+
 # Dados do sistema
 #Digite aqui os dados do sistema linear
 
 
-b = [3.0, 2]
+b = [4.0, 8, 10]
 
 A = [
-    1.0 2;
-    2.0 0 
+    4.0 10 0;
+    7 7 1;
+    0 0 10
 ]
 
-println(solverFatoracaoLUSemPivoteamento(A, b))  
+println(solverLinearSystem(A, b))  
 
 
 
