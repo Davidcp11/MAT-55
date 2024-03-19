@@ -256,15 +256,15 @@ end
 
 
 # Dados do sistema
-#Digite aqui os dados do sistema linear
+# Digite aqui os dados do sistema linear
+# Para funcionar corretamente, coloque pelo menos um dos números na forma de float
 
-
-b = [4.0, 8, 10]
+b = [4.0, 7, 2]
 
 A = [
-    4.0 10 0;
-    7 7 1;
-    0 0 10
+    4.0 0 0;
+    7 7 0;
+    2 1 10
 ]
 
 println(solverLinearSystem(A, b))  

@@ -153,9 +153,9 @@ function solverLinearSystem(A::Array{Float64,2}, b::Array{Float64,1})
         return "Método inválido"
     end
 end
-# Dados do sistema
-#Digite aqui os dados do sistema linear
 
+# Dados do sistema
+# Digite aqui os dados do sistema linear
 # Para funcionar corretamente, coloque pelo menos um dos números na forma de float
 
 b = [6.0; 2; 7]
